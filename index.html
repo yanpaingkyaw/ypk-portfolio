@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Yan Paing Kyaw — Chief Technology Officer with 17+ years of IT leadership, software development, and digital transformation experience."
+    />
+    <meta property="og:title" content="Yan Paing Kyaw | CTO Portfolio" />
+    <meta
+      property="og:description"
+      content="Personal portfolio of Yan Paing Kyaw — technology leader, project manager, and software development expert."
+    />
+    <meta property="og:type" content="website" />
+    <title>Yan Paing Kyaw | Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/custom.css" />
+    <script>
+      (function () {
+        const stored = localStorage.getItem('portfolio-theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const isDark = stored === 'dark' || (stored !== 'light' && prefersDark);
+        if (isDark) document.documentElement.classList.add('dark');
+      })();
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'system-ui', 'sans-serif'],
+            },
+            colors: {
+              accent: {
+                DEFAULT: '#2563eb',
+                dark: '#60a5fa',
+              },
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body x-data="portfolioApp()" x-init="init()" x-cloak class="bg-theme-primary text-theme-primary antialiased">
+    <a href="#main-content" class="skip-link">Skip to content</a>
+
+    <header class="nav-shell sticky top-0 z-50 backdrop-blur-md">
+      <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6" aria-label="Primary">
+       
+
+        <div class="hidden items-center gap-6 md:flex">
+          <template x-for="link in profile.navLinks" :key="link.id">
+            <a
+              href="#"
+              @click.prevent="scrollTo(link.id)"
+              class="nav-link text-sm font-medium"
+              :class="{ active: activeSection === link.id }"
+              x-text="link.label"
+            ></a>
+          </template>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button
+            type="button"
+            @click="toggleTheme()"
+            class="rounded-full border border-theme p-2 text-theme-secondary transition hover:border-accent hover:text-accent"
+            :aria-label="darkMode ? 'Switch to light mode' : 'Switch to dark mode'"
+          >
+            <svg x-show="!darkMode" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364 6.364-1.414-1.414M7.05 7.05 5.636 5.636m12.728 0-1.414 1.414M7.05 16.95l-1.414 1.414M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            <svg x-show="darkMode" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+            </svg>
+          </button>
+
+          <button
+            type="button"
+            class="rounded-lg border border-theme p-2 md:hidden"
+            @click="mobileOpen = !mobileOpen"
+            aria-label="Toggle navigation menu"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 7h16M4 12h16M4 17h16" />
+            </svg>
+          </button>
+        </div>
+      </nav>
+
+      <div x-show="mobileOpen" x-transition class="border-t border-theme md:hidden">
+        <div class="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-4">
+          <template x-for="link in profile.navLinks" :key="link.id">
+            <a
+              href="#"
+              @click.prevent="scrollTo(link.id)"
+              class="rounded-lg px-3 py-2 text-sm font-medium text-theme-secondary hover:bg-theme-elevated"
+              :class="{ 'accent-text bg-theme-elevated': activeSection === link.id }"
+              x-text="link.label"
+            ></a>
+          </template>
+        </div>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <section id="hero" class="hero-gradient border-b border-theme">
+        <div class="mx-auto grid max-w-6xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-center lg:py-24">
+          <div>
+            <p class="hero-subtitle mb-3 text-sm font-semibold uppercase tracking-[0.2em] accent-text">Technology Leader</p>
+            <h1 class="mb-4 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
+              <span class="hero-word inline-block">Yan</span>
+              <span class="hero-word inline-block">Paing</span>
+              <span class="hero-word inline-block accent-text">Kyaw</span>
+            </h1>
+            <p class="hero-summary mb-2 text-xl font-semibold text-theme-secondary" x-text="`${profile.title} @ ${profile.company}`"></p>
+            <p class="hero-summary mb-8 max-w-2xl text-base leading-7 text-theme-muted" x-text="profile.summary"></p>
+            <div class="hero-cta flex flex-wrap gap-4">
+              <button type="button" @click="scrollTo('experience')" class="btn-primary rounded-full px-6 py-3 text-sm font-semibold transition">
+                View Experience
+              </button>
+              <a href="assets/resume.pdf" download class="btn-secondary rounded-full px-6 py-3 text-sm font-semibold transition">
+                Download Resume
+              </a>
+            </div>
+          </div>
+
+          <div class="flex justify-center lg:justify-end">
+            <img
+              src="assets/ypk.jfif"
+              alt="Portrait of Yan Paing Kyaw"
+              class="hero-photo h-72 w-72 rounded-full object-cover ring-4 ring-blue-500/20 sm:h-80 sm:w-80"
+              width="320"
+              height="320"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section id="about" class="reveal-item border-b border-theme py-16 sm:py-20">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <div class="mb-10 max-w-3xl">
+            <p class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] accent-text">About</p>
+            <h2 class="text-3xl font-bold sm:text-4xl">Driving digital transformation with clarity and impact</h2>
+            <p class="mt-4 text-base leading-7 text-theme-secondary" x-text="profile.summary"></p>
+          </div>
+
+          <div class="grid gap-4 sm:grid-cols-3">
+            <template x-for="stat in profile.stats" :key="stat.label">
+              <article class="stat-card rounded-2xl p-6">
+                <p
+                  class="text-3xl font-bold accent-text"
+                  :data-counter="stat.value"
+                  :data-suffix="stat.suffix"
+                  :data-decimals="stat.decimals || 0"
+                  x-text="`${stat.value}${stat.suffix}`"
+                ></p>
+                <p class="mt-2 text-sm text-theme-muted" x-text="stat.label"></p>
+              </article>
+            </template>
+          </div>
+        </div>
+      </section>
+
+      <section id="experience" class="reveal-item border-b border-theme py-16 sm:py-20">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <div class="mb-10 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] accent-text">Experience</p>
+              <h2 class="text-3xl font-bold sm:text-4xl">Career journey across fintech, telecom, and enterprise IT</h2>
+            </div>
+            <p class="max-w-xl text-sm text-theme-muted">Click a point on the timeline to jump to role details.</p>
+          </div>
+
+          <div class="section-shell mb-10 rounded-2xl p-4 sm:p-6">
+            <div id="experience-timeline" aria-label="Interactive career timeline"></div>
+          </div>
+
+          <div class="space-y-4">
+            <template x-for="role in profile.experience" :key="role.id">
+              <article
+                :id="`exp-${role.id}`"
+                class="experience-card rounded-2xl p-5 transition"
+                x-data="{ open: false }"
+              >
+                <button type="button" class="flex w-full items-start justify-between gap-4 text-left" @click="open = !open">
+                  <div>
+                    <h3 class="text-lg font-semibold" x-text="role.title"></h3>
+                    <p class="mt-1 text-sm accent-text" x-text="role.company"></p>
+                    <p class="mt-1 text-sm text-theme-muted">
+                      <span x-text="role.location"></span>
+                      <span class="mx-2">•</span>
+                      <span x-text="formatDateRange(role.start, role.end)"></span>
+                    </p>
+                  </div>
+                  <span class="rounded-full border border-theme px-3 py-1 text-xs text-theme-muted" x-text="open ? 'Hide' : 'Show'"></span>
+                </button>
+                <ul x-show="open" x-transition class="mt-4 space-y-2 border-t border-theme pt-4">
+                  <template x-for="item in role.highlights" :key="item">
+                    <li class="flex gap-3 text-sm leading-6 text-theme-secondary">
+                      <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full" style="background: var(--accent);"></span>
+                      <span x-text="item"></span>
+                    </li>
+                  </template>
+                </ul>
+              </article>
+            </template>
+          </div>
+        </div>
+      </section>
+
+      <section id="skills" class="reveal-item border-b border-theme py-16 sm:py-20">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <div class="grid gap-10 lg:grid-cols-[1fr_1fr] lg:items-start">
+            <div>
+              <p class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] accent-text">Skills</p>
+              <h2 class="text-3xl font-bold sm:text-4xl">Technical breadth across leadership and delivery</h2>
+              <p class="mt-4 text-base leading-7 text-theme-secondary">
+                From architecture and agile delivery to data platforms and infrastructure, my skill set spans the full technology lifecycle.
+              </p>
+              <div class="mt-6 flex flex-wrap gap-2">
+                <template x-for="skill in profile.skills" :key="skill.name">
+                  <span class="rounded-full border border-theme px-3 py-1 text-xs text-theme-secondary" x-text="skill.name"></span>
+                </template>
+              </div>
+            </div>
+
+            <div class="section-shell rounded-2xl p-4 sm:p-6">
+              <div id="skills-chart" aria-label="Skills radar chart"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="projects" class="reveal-item border-b border-theme py-16 sm:py-20">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <div class="mb-8 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] accent-text">Projects</p>
+              <h2 class="text-3xl font-bold sm:text-4xl">Featured deliveries and transformations</h2>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <template x-for="filter in profile.projectFilters" :key="filter">
+                <button
+                  type="button"
+                  class="filter-pill rounded-full px-4 py-2 text-sm font-medium transition"
+                  :class="{ active: projectFilter === filter }"
+                  @click="projectFilter = filter"
+                  x-text="filter"
+                ></button>
+              </template>
+            </div>
+          </div>
+
+          <div class="grid gap-4 sm:grid-cols-2">
+            <template x-for="project in filteredProjects" :key="project.name">
+              <article class="project-card rounded-2xl p-6">
+                <span class="rounded-full accent-bg-soft px-3 py-1 text-xs font-semibold accent-text" x-text="project.domain"></span>
+                <h3 class="mt-4 text-lg font-semibold" x-text="project.name"></h3>
+                <p class="mt-2 text-sm leading-6 text-theme-secondary" x-text="project.description"></p>
+              </article>
+            </template>
+          </div>
+        </div>
+      </section>
+
+      <section id="education" class="reveal-item border-b border-theme py-16 sm:py-20">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <p class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] accent-text">Education & Certifications</p>
+          <h2 class="mb-10 text-3xl font-bold sm:text-4xl">Academic foundation and professional credentials</h2>
+
+          <div class="grid gap-8 lg:grid-cols-2">
+            <div>
+              <h3 class="mb-4 text-lg font-semibold">Education</h3>
+              <div class="space-y-4">
+                <template x-for="item in profile.education" :key="item.degree">
+                  <article class="info-card rounded-2xl p-5">
+                    <p class="font-medium" x-text="item.degree"></p>
+                    <p class="mt-1 text-sm text-theme-muted" x-text="item.year"></p>
+                  </article>
+                </template>
+              </div>
+            </div>
+
+            <div>
+              <h3 class="mb-4 text-lg font-semibold">Certifications</h3>
+              <div class="space-y-4">
+                <template x-for="item in profile.certifications" :key="item.name">
+                  <article class="info-card rounded-2xl p-5">
+                    <p class="font-medium" x-text="item.name"></p>
+                    <p class="mt-1 text-sm text-theme-muted" x-text="item.year"></p>
+                  </article>
+                </template>
+              </div>
+
+              <h3 class="mb-4 mt-8 text-lg font-semibold">Languages</h3>
+              <div class="space-y-4">
+                <template x-for="item in profile.languages" :key="item.name">
+                  <article class="info-card rounded-2xl p-5">
+                    <p class="font-medium" x-text="item.name"></p>
+                    <p class="mt-1 text-sm text-theme-muted" x-text="item.level"></p>
+                  </article>
+                </template>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" class="reveal-item py-16 sm:py-20">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <div class="section-shell rounded-3xl p-8 sm:p-10">
+            <p class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] accent-text">Contact</p>
+            <h2 class="text-3xl font-bold sm:text-4xl">Let's connect</h2>
+            <p class="mt-4 max-w-2xl text-base leading-7 text-theme-secondary">
+              Open to conversations about technology strategy, digital transformation, and leadership opportunities.
+            </p>
+
+            <div class="mt-8 grid gap-4 sm:grid-cols-3">
+              <a :href="`mailto:${profile.email}`" class="info-card rounded-2xl p-5 transition hover:border-accent">
+                <p class="text-sm text-theme-muted">Email</p>
+                <p class="mt-2 font-medium accent-text" x-text="profile.email"></p>
+              </a>
+              <a :href="`tel:${profile.phone.replace(/[^+\d]/g, '')}`" class="info-card rounded-2xl p-5 transition hover:border-accent">
+                <p class="text-sm text-theme-muted">Phone</p>
+                <p class="mt-2 font-medium" x-text="profile.phone"></p>
+              </a>
+              <div class="info-card rounded-2xl p-5">
+                <p class="text-sm text-theme-muted">Location</p>
+                <p class="mt-2 font-medium" x-text="profile.location"></p>
+                <p class="mt-1 text-sm text-theme-muted" x-text="profile.address"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="border-t border-theme py-6">
+      <div class="mx-auto flex max-w-6xl flex-col gap-2 px-4 text-sm text-theme-muted sm:flex-row sm:items-center sm:justify-between sm:px-6">
+        <p>&copy; <span x-text="new Date().getFullYear()"></span> Yan Paing Kyaw. All rights reserved.</p>
+        <p>Built with HTML, Tailwind CSS, Alpine.js, D3.js, and Anime.js</p>
+      </div>
+    </footer>
+
+    <script src="js/data.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/animations.js"></script>
+    <script src="js/app.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x/dist/cdn.min.js"></script>
+  </body>
+</html>
