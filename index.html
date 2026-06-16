@@ -17,7 +17,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/tailwind.min.css" />
     <link rel="stylesheet" href="css/custom.css" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://d3js.org https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';"
+    />
     <script>
       (function () {
         const stored = localStorage.getItem('portfolio-theme');
@@ -25,25 +30,6 @@
         const isDark = stored === 'dark' || (stored !== 'light' && prefersDark);
         if (isDark) document.documentElement.classList.add('dark');
       })();
-    </script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        darkMode: 'class',
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['Inter', 'system-ui', 'sans-serif'],
-            },
-            colors: {
-              accent: {
-                DEFAULT: '#2563eb',
-                dark: '#60a5fa',
-              },
-            },
-          },
-        },
-      };
     </script>
   </head>
   <body x-data="portfolioApp()" x-init="init()" x-cloak class="bg-theme-primary text-theme-primary antialiased">
@@ -252,6 +238,7 @@
                   :class="{ active: projectFilter === filter }"
                   @click="projectFilter = filter"
                   x-text="filter"
+                  :aria-pressed="projectFilter === filter"
                 ></button>
               </template>
             </div>
@@ -349,11 +336,11 @@
     </footer>
 
     <script src="js/data.js"></script>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js" integrity="sha384-CjloA8y00+1SDAUkjs099PVfnY2KmDC2BZnws9kh8D/lX1s46w6EPhpXdqMfjK6i" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js" integrity="sha384-/Mc/2ffICYME94wcPOYwoL99IzpbvFsDTty0/5V5t22x2n26tp8JRSsxKjvgZuZs" crossorigin="anonymous"></script>
     <script src="js/charts.js"></script>
     <script src="js/animations.js"></script>
     <script src="js/app.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js" integrity="sha384-9Ax3MmS9AClxJyd5/zafcXXjxmwFhZCdsT6HJoJjarvCaAkJlk5QDzjLJm+Wdx5F" crossorigin="anonymous"></script>
   </body>
 </html>
