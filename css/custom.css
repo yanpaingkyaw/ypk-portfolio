@@ -71,6 +71,19 @@ body {
   left: 1rem;
 }
 
+.touch-target {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  padding: 0.625rem;
+}
+
+.nav-brand {
+  color: var(--text-primary);
+}
+
 .section-shell {
   background: var(--bg-secondary);
   border: 1px solid var(--border);
@@ -270,4 +283,8 @@ body {
   border-color: var(--accent);
   color: var(--accent);
   background: var(--accent-soft);
+}
+
+.skill-node {
+  cursor: pointer;
 }

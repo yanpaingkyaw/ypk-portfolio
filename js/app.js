@@ -16,6 +16,7 @@ function portfolioApp() {
     init() {
       this.initTheme();
       this.initSectionObserver();
+      this.initMobileNav();
 
       window.addEventListener('portfolio:theme-changed', () => {
         if (window.PortfolioCharts) {
@@ -23,10 +24,14 @@ function portfolioApp() {
         }
       });
 
+      let resizeTimer;
       window.addEventListener('resize', () => {
-        if (window.PortfolioCharts) {
-          window.PortfolioCharts.renderAll();
-        }
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          if (window.PortfolioCharts) {
+            window.PortfolioCharts.renderAll();
+          }
+        }, 150);
       });
 
       this.$nextTick(() => {
@@ -94,6 +99,14 @@ function portfolioApp() {
       );
 
       sections.forEach((section) => observer.observe(section));
+    },
+
+    initMobileNav() {
+      window.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          this.mobileOpen = false;
+        }
+      });
     },
   };
 }

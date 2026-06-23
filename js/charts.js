@@ -13,6 +13,31 @@
     };
   }
 
+  function getPointerPosition(event) {
+    if (event.pageX != null) {
+      return { x: event.pageX, y: event.pageY };
+    }
+    const touch = event.changedTouches?.[0] || event.touches?.[0];
+    if (touch) {
+      return { x: touch.pageX, y: touch.pageY };
+    }
+    return { x: 0, y: 0 };
+  }
+
+  function showSkillTooltip(event, item) {
+    tooltip.style('opacity', 1).html(`<strong>${item.axis}</strong><br>${item.value}% proficiency`);
+    positionSkillTooltip(event);
+  }
+
+  function positionSkillTooltip(event) {
+    const { x, y } = getPointerPosition(event);
+    tooltip.style('left', `${x + 12}px`).style('top', `${y - 24}px`);
+  }
+
+  function hideSkillTooltip() {
+    tooltip.style('opacity', 0);
+  }
+
   function renderSkillsRadar() {
     const container = document.getElementById('skills-chart');
     if (!container || typeof PROFILE === 'undefined') return;
@@ -20,8 +45,10 @@
     const data = PROFILE.skillCategories;
     const width = container.clientWidth || 480;
     const height = Math.max(320, width * 0.72);
-    const radius = Math.min(width, height) / 2 - 48;
+    const radius = Math.min(width, height) / 2 - (width < 480 ? 56 : 48);
     const levels = 5;
+    const labelOffset = width < 480 ? 18 : 22;
+    const labelFontSize = width < 480 ? 11 : 12;
 
     container.innerHTML = '';
     const svg = d3
@@ -60,12 +87,12 @@
         .attr('stroke-width', 1);
 
       g.append('text')
-        .attr('x', Math.cos(angle) * (radius + 22))
-        .attr('y', Math.sin(angle) * (radius + 22))
+        .attr('x', Math.cos(angle) * (radius + labelOffset))
+        .attr('y', Math.sin(angle) * (radius + labelOffset))
         .attr('text-anchor', Math.abs(Math.cos(angle)) < 0.1 ? 'middle' : Math.cos(angle) > 0 ? 'start' : 'end')
         .attr('dominant-baseline', 'middle')
         .attr('fill', colors.text)
-        .attr('font-size', 12)
+        .attr('font-size', labelFontSize)
         .text(item.axis);
     });
 
@@ -97,15 +124,20 @@
       .attr('class', 'skill-node')
       .attr('cx', (_, index) => valuePoints[index][0])
       .attr('cy', (_, index) => valuePoints[index][1])
-      .attr('r', 4)
+      .attr('r', width < 480 ? 6 : 4)
       .attr('fill', colors.stroke)
-      .on('mouseenter', (event, item) => {
-        tooltip.style('opacity', 1).html(`<strong>${item.axis}</strong><br>${item.value}% proficiency`);
+      .on('mouseenter', (event, item) => showSkillTooltip(event, item))
+      .on('mousemove', positionSkillTooltip)
+      .on('mouseleave', hideSkillTooltip)
+      .on('click', function (event, item) {
+        event.stopPropagation();
+        showSkillTooltip(event, item);
       })
-      .on('mousemove', (event) => {
-        tooltip.style('left', `${event.pageX + 12}px`).style('top', `${event.pageY - 24}px`);
-      })
-      .on('mouseleave', () => tooltip.style('opacity', 0));
+      .on('touchend', function (event, item) {
+        event.preventDefault();
+        event.stopPropagation();
+        showSkillTooltip(event, item);
+      });
   }
 
   function formatTimelineRange(start, end) {
@@ -121,11 +153,12 @@
 
     const experiences = PROFILE.experience;
     const width = container.clientWidth || 480;
-    const rowHeight = 78;
+    const rowHeight = width < 480 ? 88 : 78;
     const margin = { top: 12, right: 12, bottom: 12, left: 12 };
     const lineX = 18;
     const labelX = 40;
     const labelWidth = width - labelX - margin.left - margin.right;
+    const labelHeight = width < 480 ? 80 : 64;
     const height = Math.max(420, experiences.length * rowHeight + margin.top + margin.bottom);
     const innerHeight = height - margin.top - margin.bottom;
 
@@ -188,9 +221,9 @@
     nodes
       .append('foreignObject')
       .attr('x', labelX)
-      .attr('y', -30)
+      .attr('y', -(labelHeight / 2))
       .attr('width', labelWidth)
-      .attr('height', 64)
+      .attr('height', labelHeight)
       .append('xhtml:div')
       .attr('class', 'timeline-label')
       .html(
@@ -206,6 +239,12 @@
     renderSkillsRadar();
     renderExperienceTimeline();
   }
+
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest('.skill-node') && !event.target.closest('.chart-tooltip')) {
+      hideSkillTooltip();
+    }
+  });
 
   window.PortfolioCharts = { renderAll, renderSkillsRadar, renderExperienceTimeline };
 })();

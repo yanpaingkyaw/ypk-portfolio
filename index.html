@@ -33,26 +33,33 @@
     <a href="#main-content" class="skip-link">Skip to content</a>
 
     <header class="nav-shell sticky top-0 z-50 backdrop-blur-md">
-      <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6" aria-label="Primary">
-       
+      <nav class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6" aria-label="Primary">
+        <a
+          href="#"
+          @click.prevent="scrollTo('hero')"
+          class="nav-brand flex min-h-11 shrink-0 items-center gap-2 rounded-lg font-bold tracking-tight transition hover:opacity-80"
+        >
+          <span class="flex h-9 w-9 items-center justify-center rounded-lg btn-primary text-xs font-extrabold">YP</span>
+          <span class="hidden text-sm sm:inline sm:text-base" x-text="profile.name"></span>
+        </a>
 
-        <div class="hidden items-center gap-6 md:flex">
+        <div class="hidden flex-1 items-center justify-center gap-3 lg:gap-6 md:flex">
           <template x-for="link in profile.navLinks" :key="link.id">
             <a
               href="#"
               @click.prevent="scrollTo(link.id)"
-              class="nav-link text-sm font-medium"
+              class="nav-link text-xs font-medium lg:text-sm"
               :class="{ active: activeSection === link.id }"
               x-text="link.label"
             ></a>
           </template>
         </div>
 
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-1 sm:gap-2">
           <button
             type="button"
             @click="toggleTheme()"
-            class="rounded-full border border-theme p-2 text-theme-secondary transition hover:border-accent hover:text-accent"
+            class="touch-target rounded-full border border-theme text-theme-secondary transition hover:border-accent hover:text-accent"
             :aria-label="darkMode ? 'Switch to light mode' : 'Switch to dark mode'"
           >
             <svg x-show="!darkMode" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -65,9 +72,10 @@
 
           <button
             type="button"
-            class="rounded-lg border border-theme p-2 md:hidden"
+            class="touch-target rounded-lg border border-theme md:hidden"
             @click="mobileOpen = !mobileOpen"
             aria-label="Toggle navigation menu"
+            :aria-expanded="mobileOpen"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 7h16M4 12h16M4 17h16" />
@@ -93,7 +101,7 @@
 
     <main id="main-content">
       <section id="hero" class="hero-gradient border-b border-theme">
-        <div class="mx-auto grid max-w-6xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-center lg:py-24">
+        <div class="mx-auto grid max-w-6xl gap-10 px-4 py-16 sm:px-6 md:grid-cols-[1.2fr_0.8fr] md:items-center md:py-20 lg:py-24">
           <div>
             <p class="hero-subtitle mb-3 text-sm font-semibold uppercase tracking-[0.2em] accent-text">Technology Leader</p>
             <h1 class="mb-4 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
@@ -113,11 +121,11 @@
             </div>
           </div>
 
-          <div class="flex justify-center lg:justify-end">
+          <div class="flex justify-center md:justify-end">
             <img
               src="assets/ypk.jfif"
               alt="Portrait of Yan Paing Kyaw"
-              class="hero-photo h-72 w-72 rounded-full object-cover ring-4 ring-blue-500/20 sm:h-80 sm:w-80"
+              class="hero-photo aspect-square w-[min(70vw,14rem)] rounded-full object-cover ring-4 ring-blue-500/20 sm:w-72 md:w-80"
               width="320"
               height="320"
             />
@@ -152,7 +160,7 @@
 
       <section id="experience" class="reveal-item border-b border-theme py-16 sm:py-20">
         <div class="mx-auto max-w-6xl px-4 sm:px-6">
-          <div class="mb-10 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div class="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
               <p class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] accent-text">Experience</p>
               <h2 class="text-3xl font-bold sm:text-4xl">Career journey across fintech, telecom, and enterprise IT</h2>
@@ -181,7 +189,7 @@
                       <span x-text="formatDateRange(role.start, role.end)"></span>
                     </p>
                   </div>
-                  <span class="rounded-full border border-theme px-3 py-1 text-xs text-theme-muted" x-text="open ? 'Hide' : 'Show'"></span>
+                  <span class="flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-full border border-theme px-3 text-xs text-theme-muted" x-text="open ? 'Hide' : 'Show'"></span>
                 </button>
                 <ul x-show="open" x-transition class="mt-4 space-y-2 border-t border-theme pt-4">
                   <template x-for="item in role.highlights" :key="item">
@@ -199,7 +207,7 @@
 
       <section id="skills" class="reveal-item border-b border-theme py-16 sm:py-20">
         <div class="mx-auto max-w-6xl px-4 sm:px-6">
-          <div class="grid gap-10 lg:grid-cols-[1fr_1fr] lg:items-start">
+          <div class="grid gap-10 md:grid-cols-[1fr_1fr] md:items-start">
             <div>
               <p class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] accent-text">Skills</p>
               <h2 class="text-3xl font-bold sm:text-4xl">Technical breadth across leadership and delivery</h2>
@@ -222,7 +230,7 @@
 
       <section id="projects" class="reveal-item border-b border-theme py-16 sm:py-20">
         <div class="mx-auto max-w-6xl px-4 sm:px-6">
-          <div class="mb-8 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div class="mb-8 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div>
               <p class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] accent-text">Projects</p>
               <h2 class="text-3xl font-bold sm:text-4xl">Featured deliveries and transformations</h2>
@@ -231,7 +239,7 @@
               <template x-for="filter in profile.projectFilters" :key="filter">
                 <button
                   type="button"
-                  class="filter-pill rounded-full px-4 py-2 text-sm font-medium transition"
+                  class="filter-pill min-h-11 rounded-full px-4 py-2 text-sm font-medium transition"
                   :class="{ active: projectFilter === filter }"
                   @click="projectFilter = filter"
                   x-text="filter"
@@ -258,7 +266,7 @@
           <p class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] accent-text">Education & Certifications</p>
           <h2 class="mb-10 text-3xl font-bold sm:text-4xl">Academic foundation and professional credentials</h2>
 
-          <div class="grid gap-8 lg:grid-cols-2">
+          <div class="grid gap-8 md:grid-cols-2">
             <div>
               <h3 class="mb-4 text-lg font-semibold">Education</h3>
               <div class="space-y-4">
@@ -305,7 +313,7 @@
               Open to conversations about technology strategy, digital transformation, and leadership opportunities.
             </p>
 
-            <div class="mt-8 grid gap-4 sm:grid-cols-3">
+            <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <a :href="`mailto:${profile.email}`" class="info-card rounded-2xl p-5 transition hover:border-accent">
                 <p class="text-sm text-theme-muted">Email</p>
                 <p class="mt-2 font-medium accent-text" x-text="profile.email"></p>
