@@ -1,0 +1,66 @@
+name: CI and Netlify Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: netlify-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build and verify site
+        run: npm run build
+
+      - name: Deploy pull request preview
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          set -euo pipefail
+          npx netlify-cli deploy \
+            --dir=dist \
+            --no-build \
+            --context=deploy-preview 2>&1 | tee "$RUNNER_TEMP/netlify-preview.log"
+
+          preview_url="$(grep -Eo 'https://[[:alnum:]-]+\.netlify\.app' "$RUNNER_TEMP/netlify-preview.log" | tail -n 1)"
+          if [ -z "$preview_url" ]; then
+            echo "Could not find the Netlify preview URL in the deploy output." >&2
+            exit 1
+          fi
+
+          {
+            echo "### Netlify preview"
+            echo
+            echo "$preview_url"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Deploy production
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: npx netlify-cli deploy --dir=dist --no-build --prod

@@ -27,7 +27,8 @@ The site presents professional experience, skills, selected projects, education,
 - Anime.js for animations
 - Tailwind CSS 3 for utility classes
 - Custom CSS variables and components in `css/custom.css`
-- Node.js/npm for the Tailwind build command
+- Node.js 24/npm for the build
+- Netlify CLI for GitHub Actions deployments
 
 The application has no backend, API, database, authentication, or server-side rendering. It can be hosted on any static web host.
 
@@ -46,6 +47,8 @@ index.html
 
 `js/data.js` is the content source of truth. The HTML renders that data through Alpine.js templates. Charts and animations read the same data and are refreshed when the theme or viewport changes.
 
+`npm run build` compiles Tailwind and assembles the deployable static files into `dist/`; the source assets remain in their existing directories.
+
 ## Project structure
 
 ```text
@@ -63,6 +66,12 @@ index.html
 │   ├── charts.js
 │   └── data.js
 ├── index.html
+├── scripts/
+│   ├── build-site.js
+│   └── check-build.js
+├── .github/workflows/deploy.yml
+├── netlify.toml
+├── .nvmrc
 ├── package.json
 ├── package-lock.json
 └── tailwind.config.js
@@ -72,30 +81,30 @@ index.html
 
 ### Prerequisites
 
-- Node.js and npm
+- Node.js 24 and npm
 - A modern browser
 - A local static HTTP server for browser testing
 
 ### Install dependencies
 
 ```bash
-npm install
+npm ci
 ```
 
-### Build CSS
+### Build the site
 
 ```bash
-npm run build:css
+npm run build
 ```
 
-This scans `index.html` and writes the minified output to `css/tailwind.min.css`.
+This compiles Tailwind to `css/tailwind.min.css`, assembles a clean `dist/` deployment directory, and checks required files and local asset references. The `dist/` directory is generated and ignored by Git. To regenerate only the Tailwind stylesheet, run `npm run build:css`.
 
 ### Run locally
 
-There is no application server or `npm start` script. Serve the repository root with a static server:
+There is no application server or `npm start` script. After building, serve the deployable output with a static server:
 
 ```bash
-python3 -m http.server 8000
+python3 -m http.server 8000 --directory dist
 ```
 
 Open [http://localhost:8000/](http://localhost:8000/) in a browser.
@@ -120,13 +129,19 @@ Keep the existing data property names unless the corresponding templates and Jav
 - Use [`js/charts.js`](js/charts.js) for D3 visualizations.
 - Use [`js/animations.js`](js/animations.js) for motion and scroll effects.
 - Use [`css/custom.css`](css/custom.css) for theme variables and custom styles.
-- Run `npm run build:css` after changing Tailwind classes or `tailwind.config.js`.
+- Run `npm run build` after changing Tailwind classes or `tailwind.config.js`.
 
 Preserve accessibility features, responsive behavior, external script integrity attributes, and reduced-motion support.
 
 ## Validation
 
-Run JavaScript syntax checks:
+Run the production build and output checks:
+
+```bash
+npm run build
+```
+
+The project does not yet have a separate automated application test suite. You can also run JavaScript syntax checks:
 
 ```bash
 for file in js/*.js; do node --check "$file"; done
@@ -142,16 +157,18 @@ npm test
 
 It currently exits with `Error: no test specified`. This is a known project limitation, not an application test result.
 
-## Deployment
+## CI/CD and Netlify deployment
 
-Deploy the repository root to a static hosting provider such as Vercel, Netlify, GitHub Pages, or a static web server. No environment variables are currently needed.
+GitHub Actions runs the build and output checks on pull requests targeting `main` and on pushes to `main`. Successful pushes to `main` deploy the built `dist/` directory to Netlify production. Same-repository pull requests receive a non-production Netlify preview URL in the Actions summary. Fork pull requests still run build checks, but skip deployment because GitHub does not expose Actions secrets to fork workflows.
 
-The deployment must include:
+Add the repository secrets in [GitHub Actions secrets](https://github.com/yanpaingkyaw/ypk-portfolio/settings/secrets/actions):
 
-- `index.html`
-- `css/`
-- `js/`
-- `assets/`
+- `NETLIFY_AUTH_TOKEN`: create a personal access token in Netlify under **User settings → Applications → Personal access tokens → New access token**. Give it a recognizable name such as `GitHub Actions ypk-portfolio`, choose an expiration, generate it, and copy it immediately; Netlify only shows the value once. Paste it into a new GitHub repository secret named `NETLIFY_AUTH_TOKEN`. Never commit or send the token in chat. See [Netlify's token instructions](https://docs.netlify.com/api-and-cli-guides/cli-guides/get-started-with-cli/#obtain-a-token-in-the-ui).
+- `NETLIFY_SITE_ID`: the existing site's **Project ID**, available in Netlify under **Project configuration → General**. This repository's `NETLIFY_SITE_ID` secret is already configured.
+
+The build uses Node.js 24, specified in `.nvmrc`. [`netlify.toml`](netlify.toml) declares `npm run build` and `dist` as the build command and publish directory. GitHub Actions builds the site and sends the result to Netlify through the CLI.
+
+Netlify's Git-based automatic builds are stopped for this site so the GitHub Actions workflow is the deploy trigger. Do not commit `dist/`; the workflow creates it for each run. The application itself has no runtime environment variables or backend services.
 
 The page loads Inter, Alpine.js, D3.js, and Anime.js from external CDNs at runtime. If offline or self-contained deployment is required, those dependencies and the font must be downloaded and served locally.
 
@@ -160,4 +177,3 @@ The page loads Inter, Alpine.js, D3.js, and Anime.js from external CDNs at runti
 - Contact details are public page content. Base64 encoding in `js/data.js` is obfuscation, not encryption.
 - External CDN scripts use Subresource Integrity attributes in `index.html`.
 - D3 chart labels currently use trusted local data. Sanitize or avoid HTML-string rendering if the data source becomes editable or remote.
-
