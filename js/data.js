@@ -9,7 +9,7 @@ const PROFILE = {
   summary:
     'A results-oriented leader with over seventeen years of experience in Information Technology, including software development (full SDLC), project management, and system integration. Proven team leader with strong programming, design, and analysis skills, combining leadership, analytical, and relational strengths to align technology strategy with business goals.',
   stats: [
-    { label: 'Years Experience', value: 17, suffix: '+' },
+    { label: 'Years Experience', value: 19, suffix: '+' },
     { label: 'Leadership Roles', value: 10, suffix: '+' },
     { label: 'Users Managed', value: 1.7, suffix: 'M', decimals: 1 },
   ],
