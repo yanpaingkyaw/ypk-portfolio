@@ -43,8 +43,7 @@ jobs:
           set -euo pipefail
           npx netlify-cli deploy \
             --dir=dist \
-            --no-build \
-            --context=deploy-preview 2>&1 | tee "$RUNNER_TEMP/netlify-preview.log"
+            --no-build 2>&1 | tee "$RUNNER_TEMP/netlify-preview.log"
 
           preview_url="$(grep -Eo 'https://[[:alnum:]-]+\.netlify\.app' "$RUNNER_TEMP/netlify-preview.log" | tail -n 1)"
           if [ -z "$preview_url" ]; then
