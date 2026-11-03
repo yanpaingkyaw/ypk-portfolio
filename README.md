@@ -172,6 +172,12 @@ Netlify's Git-based automatic builds are stopped for this site so the GitHub Act
 
 The page loads Inter, Alpine.js, D3.js, and Anime.js from external CDNs at runtime. If offline or self-contained deployment is required, those dependencies and the font must be downloaded and served locally.
 
+### Deferred major dependency upgrades
+
+Tailwind CSS v4 is deferred to a separate migration: it changes the CLI and CSS entry point and raises minimum supported browser versions. The migration needs a review of the existing configuration and responsive layouts.
+
+Anime.js v4 is also deferred to a separate migration because its API and module usage differ from v3. The existing hero, scroll reveal, and counter animations need to be migrated and checked with reduced motion both enabled and disabled.
+
 ## Security and privacy notes
 
 - Contact details are public page content. Base64 encoding in `js/data.js` is obfuscation, not encryption.
