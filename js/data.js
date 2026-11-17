@@ -7,7 +7,7 @@ const PROFILE = {
   phone: atob('KDk1KS00NDgwMDI0MTI='),
   address: atob('NjUzIFphck5pIDE0IFN0cmVldCwgU291dGggT2trYWxhcGEgVG93bnNoaXA='),
   summary:
-    'A results-oriented leader with over seventeen years of experience in Information Technology, including software development (full SDLC), project management, and system integration. Proven team leader with strong programming, design, and analysis skills, combining leadership, analytical, and relational strengths to align technology strategy with business goals.',
+    'A results-oriented leader with 19+ years of experience in Information Technology, including software development (full SDLC), project management, and system integration. Proven team leader with strong programming, design, and analysis skills, combining leadership, analytical, and relational strengths to align technology strategy with business goals.',
   stats: [
     { label: 'Years Experience', value: 19, suffix: '+' },
     { label: 'Leadership Roles', value: 10, suffix: '+' },

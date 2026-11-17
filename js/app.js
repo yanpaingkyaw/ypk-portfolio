@@ -70,7 +70,8 @@ function portfolioApp() {
     scrollTo(id) {
       const target = document.getElementById(id);
       if (target) {
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        target.scrollIntoView({ behavior: reducedMotion ? 'instant' : 'smooth', block: 'start' });
       }
       this.mobileOpen = false;
     },

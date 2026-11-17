@@ -1,5 +1,12 @@
 (function () {
-  const tooltip = d3.select('body').append('div').attr('class', 'chart-tooltip');
+  const tooltip = d3.select('body').append('div')
+    .attr('class', 'chart-tooltip')
+    .attr('id', 'skill-tooltip')
+    .attr('role', 'tooltip')
+    .attr('aria-hidden', 'true');
+  const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let tooltipOwner = null;
+  let tooltipHideTimer;
 
   function getThemeColors() {
     const styles = getComputedStyle(document.documentElement);
@@ -25,18 +32,46 @@
   }
 
   function showSkillTooltip(event, item) {
-    tooltip.style('opacity', 1).html(`<strong>${item.axis}</strong><br>${item.value}% proficiency`);
-    positionSkillTooltip(event);
+    clearTimeout(tooltipHideTimer);
+    tooltipOwner?.removeAttribute('aria-describedby');
+    tooltipOwner = event.currentTarget;
+    tooltipOwner.setAttribute('aria-describedby', 'skill-tooltip');
+    tooltip.attr('aria-hidden', 'false').style('opacity', 1)
+      .text(`${item.axis}: ${item.value}% proficiency`);
+    if (event.type === 'focus') {
+      const rect = tooltipOwner.getBoundingClientRect();
+      positionSkillTooltip({ pageX: rect.left + rect.width / 2 + window.scrollX,
+        pageY: rect.top + window.scrollY });
+    } else {
+      positionSkillTooltip(event);
+    }
   }
 
   function positionSkillTooltip(event) {
     const { x, y } = getPointerPosition(event);
-    tooltip.style('left', `${x + 12}px`).style('top', `${y - 24}px`);
+    const bounds = tooltip.node().getBoundingClientRect();
+    const left = Math.max(window.scrollX + 8,
+      Math.min(x + 12, window.scrollX + document.documentElement.clientWidth - bounds.width - 8));
+    tooltip.style('left', `${left}px`).style('top', `${Math.max(window.scrollY + 8, y - bounds.height - 8)}px`);
   }
 
   function hideSkillTooltip() {
-    tooltip.style('opacity', 0);
+    clearTimeout(tooltipHideTimer);
+    tooltipOwner?.removeAttribute('aria-describedby');
+    tooltipOwner = null;
+    tooltip.attr('aria-hidden', 'true').style('opacity', 0);
   }
+
+  // Allow the pointer to cross the gap between a point and its tooltip.
+  function scheduleTooltipHide() {
+    clearTimeout(tooltipHideTimer);
+    tooltipHideTimer = setTimeout(() => {
+      if (document.activeElement !== tooltipOwner) hideSkillTooltip();
+    }, 150);
+  }
+
+  tooltip.on('mouseenter', () => clearTimeout(tooltipHideTimer))
+    .on('mouseleave', scheduleTooltipHide);
 
   function renderSkillsRadar() {
     const container = document.getElementById('skills-chart');
@@ -109,26 +144,34 @@
       .attr('stroke', colors.stroke)
       .attr('stroke-width', 2);
 
-    const totalLength = polygon.node().getTotalLength();
-    polygon
-      .attr('stroke-dasharray', `${totalLength} ${totalLength}`)
-      .attr('stroke-dashoffset', totalLength)
-      .transition()
-      .duration(900)
-      .attr('stroke-dashoffset', 0);
+    if (!motionPreference.matches) {
+      const totalLength = polygon.node().getTotalLength();
+      polygon
+        .attr('stroke-dasharray', `${totalLength} ${totalLength}`)
+        .attr('stroke-dashoffset', totalLength)
+        .transition()
+        .duration(900)
+        .attr('stroke-dashoffset', 0);
+    }
 
     g.selectAll('.skill-node')
       .data(data)
       .enter()
       .append('circle')
       .attr('class', 'skill-node')
+      .attr('tabindex', 0)
+      .attr('role', 'img')
+      .attr('data-chart-key', (_, index) => `skill-${index}`)
+      .attr('aria-label', (item) => `${item.axis}: ${item.value}% proficiency`)
       .attr('cx', (_, index) => valuePoints[index][0])
       .attr('cy', (_, index) => valuePoints[index][1])
       .attr('r', width < 480 ? 6 : 4)
       .attr('fill', colors.stroke)
       .on('mouseenter', (event, item) => showSkillTooltip(event, item))
       .on('mousemove', positionSkillTooltip)
-      .on('mouseleave', hideSkillTooltip)
+      .on('mouseleave', scheduleTooltipHide)
+      .on('focus', showSkillTooltip)
+      .on('blur', hideSkillTooltip)
       .on('click', function (event, item) {
         event.stopPropagation();
         showSkillTooltip(event, item);
@@ -145,6 +188,15 @@
     const startLabel = formatter.format(new Date(start + '-01'));
     const endLabel = end === 'Present' ? 'Present' : formatter.format(new Date(end + '-01'));
     return `${startLabel} – ${endLabel}`;
+  }
+
+  function activateTimelineEntry(item) {
+    const card = document.getElementById(`exp-${item.id}`);
+    if (!card) return;
+    card.querySelector('button')?.focus({ preventScroll: true });
+    card.scrollIntoView({ behavior: motionPreference.matches ? 'instant' : 'smooth', block: 'center' });
+    card.classList.add('ring-2', 'ring-blue-500');
+    setTimeout(() => card.classList.remove('ring-2', 'ring-blue-500'), 1200);
   }
 
   function renderExperienceTimeline() {
@@ -197,26 +249,33 @@
       .enter()
       .append('g')
       .attr('class', 'timeline-node')
+      .attr('tabindex', 0)
+      .attr('role', 'button')
+      .attr('data-chart-key', (item) => `timeline-${item.id}`)
+      .attr('aria-label', (item) => `${item.title}, ${item.company}, ${formatTimelineRange(item.start, item.end)}. Jump to role details.`)
+      .attr('aria-controls', (item) => `exp-${item.id}`)
       .attr('transform', (item) => `translate(0, ${y(item.id)})`)
-      .on('click', (_, item) => {
-        const card = document.getElementById(`exp-${item.id}`);
-        if (card) {
-          card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          card.classList.add('ring-2', 'ring-blue-500');
-          setTimeout(() => card.classList.remove('ring-2', 'ring-blue-500'), 1200);
+      .on('click', (_, item) => activateTimelineEntry(item))
+      .on('keydown', (event, item) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          activateTimelineEntry(item);
         }
       });
 
-    nodes
+    const circles = nodes
       .append('circle')
       .attr('cx', lineX)
       .attr('cy', 0)
-      .attr('r', 0)
-      .attr('fill', colors.node)
-      .transition()
-      .delay((_, index) => index * 80)
-      .duration(500)
-      .attr('r', 7);
+      .attr('r', 7)
+      .attr('fill', colors.node);
+
+    if (!motionPreference.matches) {
+      circles.attr('r', 0).transition()
+        .delay((_, index) => index * 80)
+        .duration(500)
+        .attr('r', 7);
+    }
 
     nodes
       .append('foreignObject')
@@ -236,9 +295,21 @@
   }
 
   function renderAll() {
+    const focusedKey = document.activeElement?.getAttribute('data-chart-key');
+    hideSkillTooltip();
     renderSkillsRadar();
     renderExperienceTimeline();
+    if (focusedKey) {
+      const replacement = Array.from(document.querySelectorAll('[data-chart-key]'))
+        .find((node) => node.getAttribute('data-chart-key') === focusedKey);
+      replacement?.focus({ preventScroll: true });
+    }
   }
+
+  motionPreference.addEventListener('change', renderAll);
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') hideSkillTooltip();
+  });
 
   document.addEventListener('click', (event) => {
     if (!event.target.closest('.skill-node') && !event.target.closest('.chart-tooltip')) {
