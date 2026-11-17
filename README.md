@@ -135,6 +135,8 @@ Preserve accessibility features, responsive behavior, external script integrity 
 
 ## Validation
 
+See [the ticket #2 fix report](doc/fix.md) for initialization, reduced-motion, and chart accessibility changes, validation results, and release checks.
+
 Run the production build and output checks:
 
 ```bash

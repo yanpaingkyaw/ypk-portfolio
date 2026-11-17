@@ -230,7 +230,7 @@ body {
 
 .chart-tooltip {
   position: absolute;
-  pointer-events: none;
+  pointer-events: auto;
   padding: 0.5rem 0.75rem;
   border-radius: 0.5rem;
   background: var(--bg-secondary);
@@ -239,8 +239,20 @@ body {
   font-size: 0.8125rem;
   box-shadow: var(--shadow);
   opacity: 0;
+  visibility: hidden;
   transition: opacity 0.15s ease;
   z-index: 20;
+  max-width: calc(100vw - 1rem);
+}
+
+.chart-tooltip[aria-hidden="false"] {
+  visibility: visible;
+}
+
+.skill-node:focus-visible,
+.timeline-node:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 4px;
 }
 
 .timeline-node {
@@ -262,6 +274,10 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .chart-tooltip {
+    transition: none;
+  }
+
   .reveal-item {
     opacity: 1;
     transform: none;

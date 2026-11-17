@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -29,7 +29,7 @@
       })();
     </script>
   </head>
-  <body x-data="portfolioApp()" x-init="init()" x-cloak class="bg-theme-primary text-theme-primary antialiased">
+  <body x-data="portfolioApp()" x-cloak class="bg-theme-primary text-theme-primary antialiased">
     <a href="#main-content" class="skip-link">Skip to content</a>
 
     <header class="nav-shell sticky top-0 z-50 backdrop-blur-md">
@@ -165,7 +165,7 @@
               <p class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] accent-text">Experience</p>
               <h2 class="text-3xl font-bold sm:text-4xl">Career journey across fintech, telecom, and enterprise IT</h2>
             </div>
-            <p class="max-w-xl text-sm text-theme-muted">Click a point on the timeline to jump to role details.</p>
+            <p class="max-w-xl text-sm text-theme-muted">Select a timeline entry to jump to role details. Use Tab to focus an entry, then Enter or Space to activate it.</p>
           </div>
 
           <div class="section-shell mb-10 rounded-2xl p-4 sm:p-6">
@@ -208,7 +208,7 @@
       <section id="skills" class="reveal-item border-b border-theme py-16 sm:py-20">
         <div class="mx-auto max-w-6xl px-4 sm:px-6">
           <div class="grid gap-10 md:grid-cols-[1fr_1fr] md:items-start">
-            <div>
+            <div class="min-w-0">
               <p class="mb-2 text-sm font-semibold uppercase tracking-[0.2em] accent-text">Skills</p>
               <h2 class="text-3xl font-bold sm:text-4xl">Technical breadth across leadership and delivery</h2>
               <p class="mt-4 text-base leading-7 text-theme-secondary">
@@ -221,7 +221,7 @@
               </div>
             </div>
 
-            <div class="section-shell rounded-2xl p-4 sm:p-6">
+            <div class="section-shell min-w-0 rounded-2xl p-4 sm:p-6">
               <div id="skills-chart" aria-label="Skills radar chart"></div>
             </div>
           </div>
