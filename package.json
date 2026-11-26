@@ -14,7 +14,7 @@
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
-    "netlify-cli": "27.16.2",
+    "netlify-cli": "27.20.1",
     "tailwindcss": "^3.4.19"
   }
 }
